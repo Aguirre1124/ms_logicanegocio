@@ -11,7 +11,6 @@ export default class extends BaseSchema {
       table.date('date')
       table.integer('servicio_id').unsigned().references('servicios.id').onDelete('CASCADE')
       table.integer('conductor_id').unsigned().references('conductors.id').onDelete('CASCADE')
-      table.integer('factura_id').unsigned().references('facturas.id').onDelete('CASCADE')
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

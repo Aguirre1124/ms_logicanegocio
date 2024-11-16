@@ -1,44 +1,28 @@
-/*
-|--------------------------------------------------------------------------
-| Application middleware
-|--------------------------------------------------------------------------
-|
-| This file is used to define middleware for HTTP requests. You can register
-| middleware as a `closure` or an IoC container binding. The bindings are
-| preferred, since they keep this file clean.
-|
-*/
-
-import Server from '@ioc:Adonis/Core/Server'
+import Server from '@ioc:Adonis/Core/Server';
+import '@adonisjs/bodyparser/build/providers/BodyParserProvider';
 
 /*
 |--------------------------------------------------------------------------
 | Global middleware
 |--------------------------------------------------------------------------
 |
-| An array of global middleware, that will be executed in the order they
-| are defined for every HTTP requests.
+| Aquí se definen los middlewares globales que se ejecutan para todas las
+| solicitudes HTTP. Asegúrate de que `BodyParserMiddleware` esté presente.
 |
 */
 Server.middleware.register([
-  () => import('App/Middleware/Security') ,
-])
+    'Adonis/Core/BodyParserMiddleware',
+  ]);  
 
 /*
 |--------------------------------------------------------------------------
 | Named middleware
 |--------------------------------------------------------------------------
 |
-| Named middleware are defined as key-value pair. The value is the namespace
-| or middleware function and key is the alias. Later you can use these
-| alias on individual routes. For example:
-|
-| { auth: () => import('App/Middleware/Auth') }
-|
-| and then use it as follows
+| Define middlewares con alias específicos para usarlos en rutas individuales.
+| Por ejemplo, puedes agregar middleware de autenticación aquí.
 |
 | Route.get('dashboard', 'UserController.dashboard').middleware('auth')
 |
 */
-Server.middleware.registerNamed({
-})
+Server.middleware.registerNamed({});

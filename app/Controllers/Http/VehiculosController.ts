@@ -32,6 +32,7 @@ export default class VehiculosController {
     public async create({ request }: HttpContextContract) {
         //await request.validate(VehiculoValidator);
         const body = request.body();  // Obtiene los datos del cuerpo de la solicitud
+        console.log('Datos recibidos:', body);
         const theVehiculo: Vehiculo = await Vehiculo.create(body); // Crea el nuevo vehículo
         return theVehiculo;
     }

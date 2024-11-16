@@ -1,50 +1,47 @@
-import { DateTime } from 'luxon' // Importa la librería Luxon para trabajar con fechas y horas de manera eficiente.
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm' // Importa las clases y decoradores de Lucid ORM para trabajar con modelos y relaciones en la base de datos.
-import Servicio from './Servicio' // Importa el modelo 'Servicio', que representa los servicios ofrecidos.
-import Conductor from './Conductor' // Importa el modelo 'Conductor', que representa a los conductores.
-import Factura from './Factura' // Importa el modelo 'Factura', que representa las facturas asociadas.
+import { DateTime } from 'luxon';
+import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm';
+import Servicio from './Servicio';
+import Conductor from './Conductor';
+import Factura from './Factura';
 
-export default class Spent extends BaseModel { // Define la clase 'Spent', que extiende de 'BaseModel' de AdonisJS. Esto significa que es un modelo de base de datos.
+export default class Spent extends BaseModel {
 
-  @column({ isPrimary: true }) // Define la propiedad 'id' como clave primaria en la base de datos.
-  public id: number // Propiedad para almacenar el ID único de la transacción de gasto.
+  @column({ isPrimary: true })
+  public id: number;
 
-  @column() // Define la propiedad 'description' como una columna en la base de datos.
-  public description: string // Propiedad para almacenar una descripción del gasto (por ejemplo, motivo del gasto, detalles, etc.).
+  @column()
+  public description: string;
 
-  @column() // Define la propiedad 'monto' como una columna en la base de datos.
-  public monto: number // Propiedad para almacenar el monto (cantidad de dinero) del gasto.
+  @column()
+  public monto: number;
 
-  @column() // Define la propiedad 'date' como una columna en la base de datos.
-  public date: DateTime // Propiedad para almacenar la fecha en que ocurrió el gasto. Es un objeto DateTime de Luxon.
+  @column()
+  public date: DateTime;
 
-  @column() // Define la propiedad 'servicio_id' como una columna en la base de datos.
-  public servicio_id: number // Propiedad para almacenar el ID del servicio relacionado con el gasto.
+  @column()
+  public servicio_id: number;
 
-  @column() // Define la propiedad 'conductor_id' como una columna en la base de datos.
-  public conductor_id: number // Propiedad para almacenar el ID del conductor relacionado con el gasto.
+  @column()
+  public conductor_id: number;
 
-  @column.dateTime({ autoCreate: true }) // Define la propiedad 'createdAt' como una columna de tipo DateTime que se asigna automáticamente al crear el registro.
-  public createdAt: DateTime // Propiedad para almacenar la fecha de creación del registro de gasto.
+  @column.dateTime({ autoCreate: true })
+  public createdAt: DateTime;
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true }) // Define la propiedad 'updatedAt' como una columna de tipo DateTime que se actualiza automáticamente tanto al crear como al modificar el registro.
-  public updatedAt: DateTime // Propiedad para almacenar la fecha de la última actualización del registro de gasto.
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  public updatedAt: DateTime;
 
-  // Relación 'BelongsTo' que indica que un gasto pertenece a un servicio.
   @belongsTo(() => Servicio, {
-    foreignKey: 'servicio_id' // La clave foránea 'servicio_id' en 'Spent' que hace referencia al servicio.
+    foreignKey: 'servicio_id'
   })
-  public servicio: BelongsTo<typeof Servicio> // Propiedad para acceder al servicio relacionado con este gasto.
+  public servicio: BelongsTo<typeof Servicio>;
 
-  // Relación 'BelongsTo' que indica que un gasto pertenece a un conductor.
   @belongsTo(() => Conductor, {
-    foreignKey: 'conductor_id' // La clave foránea 'conductor_id' en 'Spent' que hace referencia al conductor.
+    foreignKey: 'conductor_id'
   })
-  public conductor: BelongsTo<typeof Conductor> // Propiedad para acceder al conductor relacionado con este gasto.
+  public conductor: BelongsTo<typeof Conductor>;
 
-  // Relación 'BelongsTo' que indica que un gasto pertenece a una factura.
-  @belongsTo(() => Factura, {
-    foreignKey: 'factura_id', // La clave foránea 'factura_id' en 'Spent' que hace referencia a la factura.
+  @hasOne(() => Factura, {
+    foreignKey: 'spent_id',
   })
-  public factura: BelongsTo<typeof Factura> // Propiedad para acceder a la factura relacionada con este gasto.
+  public factura: HasOne<typeof Factura>;
 }
