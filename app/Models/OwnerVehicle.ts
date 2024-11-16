@@ -13,7 +13,7 @@ export default class OwnerVehicle extends BaseModel { // Define la clase 'OwnerV
 
   @column() // Define la propiedad 'fechaDesasignacion' como una columna en la base de datos.
   public fechaDesasignacion: DateTime // Propiedad para almacenar la fecha de desasignación del vehículo del dueño.
-
+SP
   @column() // Define la propiedad 'vehiculo_id' como una columna en la base de datos.
   public vehiculo_id: number // Propiedad para almacenar el ID del vehículo relacionado con este registro.
 
@@ -21,7 +21,7 @@ export default class OwnerVehicle extends BaseModel { // Define la clase 'OwnerV
   public dueno_id: number // Propiedad para almacenar el ID del dueño relacionado con este registro.
 
   @column.dateTime({ autoCreate: true }) // Define la propiedad 'createdAt' como una columna de tipo DateTime que se asigna automáticamente al crear el registro.
-  public createdAt: DateTime // Propiedad para almacenar la fecha de creación del registro.
+  public createdAt: DateTime // Propiedad para almacenar la fecha de creación del registro.SP
 
   @column.dateTime({ autoCreate: true, autoUpdate: true }) // Define la propiedad 'updatedAt' como una columna de tipo DateTime que se actualiza automáticamente tanto al crear como al modificar el registro.
   public updatedAt: DateTime // Propiedad para almacenar la fecha de la última actualización del registro.
