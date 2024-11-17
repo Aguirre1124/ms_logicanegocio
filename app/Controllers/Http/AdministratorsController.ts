@@ -1,34 +1,53 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Administrator from 'App/Models/Administrator' // Importa el modelo Administrator para interactuar con la base de datos
+import Administrator from 'App/Models/Administrator';
 
 export default class AdministratorsController {
-  
-  // Método para obtener un administrador por su ID o listar todos los administradores
-  public async find({ params }: HttpContextContract) {
-    if (params.id) { // Si se proporciona un ID en los parámetros
-      return await Administrator.findOrFail(params.id) // Busca un administrador por su ID, lanza una excepción si no existe
-    } else {
-      return await Administrator.all() // Si no hay ID, devuelve todos los administradores
+
+    public async find({ request, params }: HttpContextContract) {
+        // Listar un elemento por Id
+        if (params.id) {
+            let theAdministrator: Administrator = await Administrator.findOrFail(params.id)
+            return theAdministrator;
+        } else {
+            const data = request.all()
+            // Listar elementos por pagina
+            if ("page" in data && "per_page" in data) {
+                const page = request.input('page', 1);
+                const perPage = request.input("per_page", 20);
+                return await Administrator.query().paginate(page, perPage)
+            // Listar todo    
+            } else {
+                return await Administrator.query()
+            }
+        }
     }
-  }
 
-  // Método para crear un nuevo administrador
-  public async create({ request }: HttpContextContract) {
-    const body = request.body() // Obtiene los datos enviados en la solicitud
-    return await Administrator.create(body) // Crea un nuevo administrador con los datos proporcionados
-  }
+    // Create
+    public async create({ request }: HttpContextContract) {
+        //await request.validate(AdministratorValidator);
+        const body = request.body();
+        const theAdministrator: Administrator = await Administrator.create(body);
+        await theAdministrator.load("servicio");
+        return theAdministrator;
+    }
 
-  // Método para actualizar un administrador existente
-  public async update({ params, request }: HttpContextContract) {
-    const administrator = await Administrator.findOrFail(params.id) // Busca el administrador por su ID
-    administrator.merge(request.body()) // Actualiza los campos del administrador con los nuevos datos
-    return await administrator.save() // Guarda los cambios en la base de datos
-  }
+    // Update
+    public async update({ params, request }: HttpContextContract) {
+        // Buscar el objeto a actualizar
+        const theAdministrator: Administrator = await Administrator.findOrFail(params.id);
+        const body = request.body();
+        theAdministrator.servicio_id = body.servicio_id;
 
-  // Método para eliminar un administrador por su ID
-  public async delete({ params, response }: HttpContextContract) {
-    const administrator = await Administrator.findOrFail(params.id) // Busca el administrador por su ID
-    await administrator.delete() // Elimina el administrador de la base de datos
-    response.status(204) // Responde con un código de estado HTTP 204 (sin contenido)
-  }
+        // Confirmar el proceso en la base de datos
+        return await theAdministrator.save();
+    }
+
+    // Delete
+    public async delete({ params, response }: HttpContextContract) {
+        // Buscar el objeto a eliminar 
+        const theAdministrator: Administrator = await Administrator.findOrFail(params.id);
+            response.status(204);
+            // retorno la accion de borrado
+            return await theAdministrator.delete();
+    }
 }

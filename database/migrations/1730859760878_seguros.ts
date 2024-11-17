@@ -9,6 +9,8 @@ export default class extends BaseSchema {
       table.string('compania')
       table.integer('numero_poliza')
       table.date('fecha_vencimiento')
+      table.integer('vehiculo_id').unsigned().references('id').inTable('vehiculos').onDelete('CASCADE')
+
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

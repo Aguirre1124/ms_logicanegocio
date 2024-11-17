@@ -7,19 +7,26 @@ export default class VehiculosController {
         // Listar un elemento por Id
         if (params.id) {
             let theVehiculo: Vehiculo = await Vehiculo.findOrFail(params.id)
+            await theVehiculo.load("seguros")
             await theVehiculo.load("vehicledrivers", Query=>{
-                Query.preload("conductor")  // Precarga la relación 'conductor'
+                Query.preload("conductor")
             })
             await theVehiculo.load("ownervehicles", Query=>{
-                Query.preload("dueno") // Precarga la relación 'dueno'
+                Query.preload("dueno")
+            })
+            await theVehiculo.load("routes", Query=>{
+                Query.preload("contract")
+            })
+            await theVehiculo.load("operations", Query=>{
+                Query.preload("municipality")
             })
             return theVehiculo;
         } else {
             const data = request.all()
             // Listar elementos por pagina
             if ("page" in data && "per_page" in data) {
-                const page = request.input('page', 1);     // Obtiene el número de página
-                const perPage = request.input("per_page", 20);  // Obtiene el número de resultados por página
+                const page = request.input('page', 1);
+                const perPage = request.input("per_page", 20);
                 return await Vehiculo.query().paginate(page, perPage)
             // Listar todo    
             } else {
@@ -31,9 +38,8 @@ export default class VehiculosController {
     // Create
     public async create({ request }: HttpContextContract) {
         //await request.validate(VehiculoValidator);
-        const body = request.body();  // Obtiene los datos del cuerpo de la solicitud
-        console.log('Datos recibidos:', body);
-        const theVehiculo: Vehiculo = await Vehiculo.create(body); // Crea el nuevo vehículo
+        const body = request.body();
+        const theVehiculo: Vehiculo = await Vehiculo.create(body);
         return theVehiculo;
     }
 
@@ -41,14 +47,12 @@ export default class VehiculosController {
     public async update({ params, request }: HttpContextContract) {
         // Buscar el objeto a actualizar
         const theVehiculo: Vehiculo = await Vehiculo.findOrFail(params.id);
-        const body = request.body();  // Obtiene los datos del cuerpo de la solicitud
-        // Actualiza los campos del vehículo con los nuevos valores
+        const body = request.body();
         theVehiculo.tipo_vehiculo = body.tipo_vehiculo;
         theVehiculo.capacidad_peso = body.capacidad_peso;
         theVehiculo.capacidad_volumen = body.capacidad_volumen;
         theVehiculo.estado = body.estado;
-
-        // Guarda los cambios en la base de datos
+        // Confirmar el proceso en la base de datos
         return await theVehiculo.save();
     }
 
@@ -56,8 +60,8 @@ export default class VehiculosController {
     public async delete({ params, response }: HttpContextContract) {
         // Buscar el objeto a eliminar 
         const theVehiculo: Vehiculo = await Vehiculo.findOrFail(params.id);
-        await theVehiculo.delete();  // Elimina el vehículo de la base de datos
-        response.status(204); // Responde con código 204, indicando que la operación fue exitosa.
-        return;
+            response.status(204);
+            // retorno la accion de borrado
+            return await theVehiculo.delete();
     }
 }

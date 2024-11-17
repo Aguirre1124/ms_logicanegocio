@@ -1,36 +1,31 @@
-import { DateTime } from 'luxon' // Importa la librería Luxon para manejar fechas y horas de manera eficiente.
-import { BaseModel, column, ManyToMany, manyToMany, HasManyThrough, hasManyThrough } from '@ioc:Adonis/Lucid/Orm' // Importa las clases y decoradores de Lucid ORM.
-import Product from './Product' // Importa el modelo Product, que representa los productos.
+import { DateTime } from 'luxon'
+import { BaseModel, column, HasMany, hasMany, HasManyThrough, hasManyThrough } from '@ioc:Adonis/Lucid/Orm'
+import CategoryProduct from './CategoryProduct'
+import Product from './Product'
 
-export default class Category extends BaseModel { // Define la clase 'Category', que extiende de 'BaseModel' de AdonisJS.
-
-  @column({ isPrimary: true }) // Define 'id' como clave primaria en la base de datos.
+export default class Category extends BaseModel {
+  @column({ isPrimary: true })
   public id: number
 
-  @column() // Define el nombre de la categoría.
+  @column()
   public name: string
 
-  @column.dateTime({ autoCreate: true }) // Fecha de creación automática.
+  @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true }) // Fecha de actualización automática.
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  // Relación reflexiva muchos a muchos con Category (para subcategorías).
-  @manyToMany(() => Category, {
-    localKey: 'id', // La clave local de Category.
-    relatedKey: 'id', // La clave relacionada con la otra categoría (subcategoría).
-    pivotForeignKey: 'category_id', // Clave foránea en la tabla intermedia que hace referencia a 'Category'.
-    pivotRelatedForeignKey: 'related_category_id' // Clave foránea en la tabla intermedia que hace referencia a la subcategoría.
+  @hasMany(() => CategoryProduct, {
+    foreignKey: 'category_id'
   })
-  public subcategories: ManyToMany<typeof Category> // Propiedad para acceder a las subcategorías asociadas.
+  public categoryproducts: HasMany<typeof CategoryProduct>
 
-  // Relación muchos a muchos con Product a través de la tabla intermedia 'category_products'.
-  @hasManyThrough([() => Product, () => Category], {
-    localKey: 'id', // La clave local en Category (se refiere al 'id' de la categoría principal).
-    foreignKey: 'category_id', // Clave foránea en la tabla intermedia que apunta a Category.
-    throughLocalKey: 'product_id', // Clave foránea en la tabla intermedia que apunta a 'Product'.
-    throughForeignKey: 'id' // Clave primaria en 'Product' (es decir, 'id').
+  @hasManyThrough([() => Product, () => CategoryProduct], {
+    localKey: 'id',
+    foreignKey: 'category_id',
+    throughLocalKey: 'product_id',
+    throughForeignKey: 'id'
   })
-  public products: HasManyThrough<typeof Product> // Propiedad para acceder a los productos asociados a la categoría a través de la relación intermedia.
+  public praducts: HasManyThrough<typeof Product>
 }

@@ -1,53 +1,56 @@
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
+import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Dueno from 'App/Models/Dueno';
 
 export default class DuenosController {
 
-  // Método para obtener un dueño específico por su ID o listar todos los dueños
-  public async find({ request, params }: HttpContextContract) {
-    if (params.id) {
-      let theDueno: Dueno = await Dueno.findOrFail(params.id);
-      
-      await theDueno.load("ownervehicles", (Query) => {
-        Query.preload("vehiculo");
-      });
-      
-      return theDueno;
-    } else {
-      const data = request.all();
-
-      if ("page" in data && "per_page" in data) {
-        const page = request.input('page', 1);
-        const perPage = request.input("per_page", 20);
-        return await Dueno.query().preload("ownervehicles").paginate(page, perPage);
-      } else {
-        return await Dueno.query().preload("ownervehicles");
-      }
+    public async find({ request, params }: HttpContextContract) {
+        // Listar un elemento por Id
+        if (params.id) {
+            let theDueno: Dueno = await Dueno.findOrFail(params.id)
+            await theDueno.load("ownervehicles", Query=>{
+                Query.preload("vehiculo")
+            })
+            return theDueno;
+        } else {
+            const data = request.all()
+            // Listar elementos por pagina
+            if ("page" in data && "per_page" in data) {
+                const page = request.input('page', 1);
+                const perPage = request.input("per_page", 20);
+                return await Dueno.query().paginate(page, perPage)
+            // Listar todo    
+            } else {
+                return await Dueno.query()
+            }
+        }
     }
-  }
 
-  // Método para crear un nuevo dueño
-  public async create({ request }: HttpContextContract) {
-    const body = request.body();
-    const theDueno: Dueno = await Dueno.create(body);
-    return theDueno;
-  }
+    // Create
+    public async create({ request }: HttpContextContract) {
+        //await request.validate(DuenoValidator);
+        const body = request.body();
+        const theDueno: Dueno = await Dueno.create(body);
+        return theDueno;
+    }
 
-  // Método para actualizar la información de un dueño
-  public async update({ params, request }: HttpContextContract) {
-    const theDueno: Dueno = await Dueno.findOrFail(params.id);
-    const body = request.body();
+    // Update
+    public async update({ params, request }: HttpContextContract) {
+        // Buscar el objeto a actualizar
+        const theDueno: Dueno = await Dueno.findOrFail(params.id);
+        const body = request.body();
+        theDueno.nombre = body.nombre;
+        theDueno.gmail = body.gmail;
 
-    theDueno.nombre = body.nombre;
-    theDueno.gmail = body.gmail;
+        // Confirmar el proceso en la base de datos
+        return await theDueno.save();
+    }
 
-    return await theDueno.save();
-  }
-
-  // Método para eliminar un dueño por su ID
-  public async delete({ params, response }: HttpContextContract) {
-    const theDueno: Dueno = await Dueno.findOrFail(params.id);
-    await theDueno.delete();
-    return response.status(204);
-  }
+    // Delete
+    public async delete({ params, response }: HttpContextContract) {
+        // Buscar el objeto a eliminar 
+        const theDueno: Dueno = await Dueno.findOrFail(params.id);
+            response.status(204);
+            // retorno la accion de borrado
+            return await theDueno.delete();
+    }
 }

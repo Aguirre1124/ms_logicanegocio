@@ -1,7 +1,7 @@
 import Route from '@ioc:Adonis/Core/Route'
 Route.group(() => {
     // Listar todos los elementos
-    Route.get("/products", "PoductsController.find");
+    Route.get("/products", "ProductsController.find");
     // Listar por id (unico elemento)
     Route.get("/products/:id", "ProductsController.find");
     // Crear

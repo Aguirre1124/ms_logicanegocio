@@ -1,60 +1,64 @@
-import { DateTime } from 'luxon';
-import { BaseModel, column, HasMany, hasMany, HasManyThrough, hasManyThrough } from '@ioc:Adonis/Lucid/Orm';
-import VehicleDriver from './VehicleDriver';
-import Vehiculo from './Vehiculo';
-import Spent from './Spent';
-import Servicio from './Servicio';
+import { DateTime } from 'luxon'
+import { BaseModel, column, HasMany, hasMany, HasManyThrough, hasManyThrough } from '@ioc:Adonis/Lucid/Orm'
+import VehicleDriver from './VehicleDriver'
+import Vehiculo from './Vehiculo'
+import Spent from './Spent'
+import Servicio from './Servicio'
+import Shift from './Shift'
 
 export default class Conductor extends BaseModel {
-  
   @column({ isPrimary: true })
-  public id: number;
+  public id: number
 
   @column()
-  public nombre: string;
+  public nombre: string
 
   @column()
-  public licencia: string;
+  public licencia: string
 
   @column()
-  public tipo_licencia: string;
+  public tipo_licencia: string
 
   @column()
-  public telefono: string;
+  public telefono: string
 
   @column()
-  public email: string;
+  public email: string
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime;
+  public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime;
+  public updatedAt: DateTime
 
-  @hasMany(() => VehicleDriver, { 
+  @hasMany(() => Shift, {
+    foreignKey: 'conductor_id',
+  })
+  public shifts: HasMany<typeof Shift>;  
+
+  @hasMany(() => VehicleDriver, {
     foreignKey: 'conductor_id'
   })
-  public vehicledrivers: HasMany<typeof VehicleDriver>;
+  public vehicledrivers: HasMany<typeof VehicleDriver>
 
   @hasManyThrough([() => Vehiculo, () => VehicleDriver], {
-    localKey: 'id',
-    foreignKey: 'conductor_id',
-    throughLocalKey: 'vehiculo_id',
-    throughForeignKey: 'id'
+    localKey: 'id', // ID en Conductor
+    foreignKey: 'conductor_id', // Clave foránea en VehicleDriver
+    throughLocalKey: 'vehiculo_id', // Clave foránea en VehicleDriver que referencia al vehículo
+    throughForeignKey: 'id' // ID en Vehiculo
   })
-  public vehiculos: HasManyThrough<typeof Vehiculo>;
+  public vehiculos: HasManyThrough<typeof Vehiculo>
 
-  @hasMany(() => Spent, { 
+  @hasMany(() => Spent, {
     foreignKey: 'conductor_id'
   })
-  public spents: HasMany<typeof Spent>;
+  public spents: HasMany<typeof Spent>
 
   @hasManyThrough([() => Servicio, () => Spent], {
-    localKey: 'id',
-    foreignKey: 'conductor_id',
-    throughLocalKey: 'servicio_id',
-    throughForeignKey: 'id'
+    localKey: 'id', // ID en Conductor
+    foreignKey: 'conductor_id', // Clave foránea en VehicleDriver
+    throughLocalKey: 'servicio_id', // Clave foránea en VehicleDriver que referencia al vehículo
+    throughForeignKey: 'id' // ID en Vehiculo
   })
-  public servicios: HasManyThrough<typeof Servicio>;
-
+  public servicios: HasManyThrough<typeof Servicio>
 }

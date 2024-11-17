@@ -1,42 +1,52 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, BelongsTo, manyToMany, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
-// import Client from './Client'
+import { BaseModel, column, HasMany, hasMany, HasManyThrough, hasManyThrough, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import CategoryProduct from './CategoryProduct'
 import Category from './Category'
+import Batch from './Batch'
+import Customer from './Customer'
 
 export default class Product extends BaseModel {
-
-  @column({ isPrimary: true }) // Define 'id' como clave primaria.
+  @column({ isPrimary: true })
   public id: number
 
-  @column() // Define el nombre del producto.
+  @column()
   public name: string
 
-  @column() // Define la descripcion del producto.
+  @column()
   public description: string
+  
+  @column()
+  public batch_id: number
 
-  @column() // Define el precio del producto.
-  public price : number
+  @column()
+  public customer_id: number
 
-  @column() // Define el stock del producto
-  public stock : number
-
-  @column.dateTime({ autoCreate: true }) // Fecha de creación automática.
+  @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true }) // Fecha de actualización automática.
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  // Relación muchos a uno con Client.
-  // @belongsTo(() => Client, {
-  //   foreignKey: 'client_id' // Clave foránea en Product que apunta a Client.
-  // })
-  // public client: BelongsTo<typeof Client>
-
-  // Relación muchos a muchos con Category.
-  @manyToMany(() => Category, {
-    pivotTable: 'category_products', // Nombre de la tabla intermedia.
-    pivotForeignKey: 'product_id', // Clave en la tabla intermedia para Product.
-    pivotRelatedForeignKey: 'category_id' // Clave en la tabla intermedia para Category.
+  @hasMany(() => CategoryProduct, {
+    foreignKey: 'product_id'
   })
-  public categories: ManyToMany<typeof Category>
+  public categoryproducts: HasMany<typeof CategoryProduct>
+
+  @hasManyThrough([() => Category, () => CategoryProduct], {
+    localKey: 'id',
+    foreignKey: 'product_id',
+    throughLocalKey: 'category_id',
+    throughForeignKey: 'id'
+  })
+  public categories: HasManyThrough<typeof Category>
+
+  @belongsTo(() => Batch, {
+    foreignKey: 'batch_id'//Clave foránea que relaciona con la identidad dominante
+  })
+  public batch: BelongsTo<typeof Batch>
+
+  @belongsTo(() => Customer, {
+    foreignKey: 'customer_id'//Clave foránea que relaciona con la identidad dominante
+  })
+  public customer: BelongsTo<typeof Customer>
 }

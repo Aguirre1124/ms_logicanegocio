@@ -10,6 +10,7 @@ export default class extends BaseSchema {
       table.date("fecha_fin")
       table.string("estado")
       table.string('detalles_servicio')
+      table.integer("customer_id").unsigned().references("customers.id").onDelete("CASCADE")
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

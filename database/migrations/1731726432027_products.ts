@@ -8,8 +8,8 @@ export default class Products extends BaseSchema {
       table.increments('id') // Clave primaria
       table.string('name').notNullable() // Nombre del producto
       table.text('description').notNullable() // Descripción del producto
-      table.decimal('price', 10, 2).notNullable() // Precio del producto, con dos decimales
-      table.integer('stock').notNullable() // Cantidad en stock del producto
+      table.integer('batch_id').unsigned().references('batches.id').onDelete('CASCADE')
+      table.integer('customer_id').unsigned().references('customers.id').onDelete('CASCADE')
       table.timestamps(true, true) // Timestamps de creación y actualización
     })
   }

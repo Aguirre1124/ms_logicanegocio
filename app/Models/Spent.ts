@@ -1,47 +1,40 @@
-import { DateTime } from 'luxon';
-import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm';
-import Servicio from './Servicio';
-import Conductor from './Conductor';
-import Factura from './Factura';
+import { DateTime } from 'luxon'
+import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import Servicio from './Servicio'
+import Conductor from './Conductor'
 
 export default class Spent extends BaseModel {
-
   @column({ isPrimary: true })
-  public id: number;
+  public id: number
 
   @column()
-  public description: string;
+  public description: string
 
   @column()
-  public monto: number;
+  public monto: number
 
   @column()
-  public date: DateTime;
+  public date: DateTime
 
   @column()
-  public servicio_id: number;
+  public servicio_id: number
 
   @column()
-  public conductor_id: number;
+  public conductor_id: number
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime;
+  public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime;
+  public updatedAt: DateTime
 
-  @belongsTo(() => Servicio, {
+  @belongsTo(() => Servicio,{
     foreignKey: 'servicio_id'
   })
-  public servicio: BelongsTo<typeof Servicio>;
+  public servicio: BelongsTo<typeof Servicio>
 
-  @belongsTo(() => Conductor, {
+  @belongsTo(() => Conductor,{
     foreignKey: 'conductor_id'
   })
-  public conductor: BelongsTo<typeof Conductor>;
-
-  @hasOne(() => Factura, {
-    foreignKey: 'spent_id',
-  })
-  public factura: HasOne<typeof Factura>;
+  public conductor: BelongsTo<typeof Conductor>  
 }

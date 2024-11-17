@@ -7,6 +7,7 @@ export default class SegurosController {
         // Listar un elemento por Id
         if (params.id) {
             let theSeguro: Seguro = await Seguro.findOrFail(params.id)
+            await theSeguro.load('vehiculo')
             return theSeguro;
         } else {
             const data = request.all()
@@ -38,6 +39,7 @@ export default class SegurosController {
         theSeguro.compania = body.compania;
         theSeguro.numeroPoliza = body.numeroPoliza;
         theSeguro.fechaVencimiento = body.fechaVencimiento;
+        theSeguro.vehiculo_id = body.vehiculo_id;
 
         // Confirmar el proceso en la base de datos
         return await theSeguro.save();

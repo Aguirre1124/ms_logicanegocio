@@ -1,38 +1,31 @@
-import { DateTime } from 'luxon';
-import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm';
-import Cuota from './Cuota';
-import Spent from './Spent';
+import { DateTime } from 'luxon'
+import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import Cuota from './Cuota'
 
 export default class Factura extends BaseModel {
-
   @column({ isPrimary: true })
-  public id: number;
+  public id: number
 
   @column()
-  public fecha_emision: string;
+  public fecha_emision: string
 
   @column()
-  public monto_total: number;
+  public monto_total: number
 
   @column()
-  public estado: string;
+  public estado: string
 
   @column()
-  public cuota_id: number;
+  public cuota_id: number
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime;
+  public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime;
+  public updatedAt: DateTime
 
   @belongsTo(() => Cuota, {
     foreignKey: 'cuota_id',
   })
-  public cuota: BelongsTo<typeof Cuota>;
-
-  @belongsTo(() => Spent, {
-    foreignKey: 'spent_id',
-  })
-  public spent: BelongsTo<typeof Spent>;
+  public cuota: BelongsTo<typeof Cuota>  
 }

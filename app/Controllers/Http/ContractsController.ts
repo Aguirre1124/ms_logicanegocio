@@ -1,53 +1,59 @@
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
+import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Contract from 'App/Models/Contract';
 
 export default class ContractsController {
 
-  // Método para obtener un contrato por su ID o listar todos los contratos
-  public async find({ request, params }: HttpContextContract) {
-    if (params.id) {
-      let theContract: Contract = await Contract.findOrFail(params.id);
-      await theContract.load("cuotas");
-      return theContract;
-    } else {
-      const data = request.all();
-
-      if ("page" in data && "per_page" in data) {
-        const page = request.input('page', 1);
-        const perPage = request.input("per_page", 20);
-        return await Contract.query().paginate(page, perPage);
-      } else {
-        return await Contract.query();
-      }
+    public async find({ request, params }: HttpContextContract) {
+        // Listar un elemento por Id
+        if (params.id) {
+            let theContract: Contract = await Contract.findOrFail(params.id)
+            await theContract.load("cuotas")
+            await theContract.load("customer")
+            await theContract.load("routes", Query=>{
+                Query.preload("vehiculo")
+            })
+            return theContract;
+        } else {
+            const data = request.all()
+            // Listar elementos por pagina
+            if ("page" in data && "per_page" in data) {
+                const page = request.input('page', 1);
+                const perPage = request.input("per_page", 20);
+                return await Contract.query().paginate(page, perPage)
+            // Listar todo    
+            } else {
+                return await Contract.query()
+            }
+        }
     }
-  }
 
-  // Método para crear un nuevo contrato
-  public async create({ request }: HttpContextContract) {
-    const body = request.body();
-    const theContract: Contract = await Contract.create(body);
-    return theContract;
-  }
+    // Create
+    public async create({ request }: HttpContextContract) {
+        //await request.validate(ContractValidator);
+        const body = request.body();
+        const theContract: Contract = await Contract.create(body);
+        return theContract;
+    }
 
-  // Método para actualizar la información de un contrato
-  public async update({ params, request }: HttpContextContract) {
-    const theContract: Contract = await Contract.findOrFail(params.id);
-    const body = request.body();
+    // Update
+    public async update({ params, request }: HttpContextContract) {
+        // Buscar el objeto a actualizar
+        const theContract: Contract = await Contract.findOrFail(params.id);
+        const body = request.body();
+        theContract.fecha_inicio = body.fechaInicio;
+        theContract.fecha_fin = body.fechaFin;
+        theContract.estado = body.estado;
+        theContract.detalles_servicio = body.detallesServicio;
+        // Confirmar el proceso en la base de datos
+        return await theContract.save();
+    }
 
-    theContract.fecha_inicio = body.fechaInicio;
-    theContract.fecha_fin = body.fechaFin;
-    theContract.estado = body.estado;
-    theContract.detalles_servicio = body.detallesServicio;
-
-    return await theContract.save();
-  }
-
-  // Método para eliminar un contrato por su ID
-  public async delete({ params, response }: HttpContextContract) {
-    const theContract: Contract = await Contract.findOrFail(params.id);
-
-    response.status(204);
-
-    return await theContract.delete();
-  }
+    // Delete
+    public async delete({ params, response }: HttpContextContract) {
+        // Buscar el objeto a eliminar 
+        const theContract: Contract = await Contract.findOrFail(params.id);
+            response.status(204);
+            // retorno la accion de borrado
+            return await theContract.delete();
+    }
 }

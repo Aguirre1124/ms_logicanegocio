@@ -1,52 +1,55 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Category from 'App/Models/Category' // Importa el modelo Category para interactuar con la base de datos
+import Category from 'App/Models/Category';
 
-export default class CategoriesController {
-  
-  // Método para obtener una categoría por su ID o listar todas las categorías
-  public async find({ params }: HttpContextContract) {
-    if (params.id) { // Si se proporciona un ID en los parámetros
-      return await Category.findOrFail(params.id) // Busca una categoría por su ID, lanza una excepción si no existe
-    } else {
-      return await Category.all() // Si no hay ID, devuelve todas las categorías
-    }
-  }
+export default class CategorysController {
 
-  // Método para crear una nueva categoría
-  public async create({ request }: HttpContextContract) {
-    const body = request.body() // Obtiene los datos enviados en la solicitud
-    return await Category.create(body) // Crea una nueva categoría con los datos proporcionados
-  }
-
-  // Método para actualizar una categoría existente
-  public async update({ params, request }: HttpContextContract) {
-    const category = await Category.findOrFail(params.id) // Busca la categoría por su ID
-    category.merge(request.body()) // Actualiza los campos de la categoría con los nuevos datos
-    return await category.save() // Guarda los cambios en la base de datos
-  }
-
-  // Método para eliminar una categoría por su ID
-  public async delete({ params, response }: HttpContextContract) {
-    const category = await Category.findOrFail(params.id) // Busca la categoría por su ID
-    await category.delete() // Elimina la categoría de la base de datos
-    response.status(204) // Responde con un código de estado HTTP 204 (sin contenido)
-  }
-    // Método para listar todas las categorías, con la opción de filtrar por nombre
-    public async index({ request }: HttpContextContract) {
-        const nameFilter = request.input('name') // Recibe un filtro opcional por nombre
-        if (nameFilter) {
-          // Si se recibe un filtro, busca categorías que coincidan parcialmente
-          return await Category.query().where('name', 'like', `%${nameFilter}%`)
+    public async find({ request, params }: HttpContextContract) {
+        // Listar un elemento por Id
+        if (params.id) {
+            let theCategory: Category = await Category.findOrFail(params.id)
+            await theCategory.load("categoryproducts", Query=>{
+                Query.preload("product")
+            })
+            return theCategory;
+        } else {
+            const data = request.all()
+            // Listar elementos por pagina
+            if ("page" in data && "per_page" in data) {
+                const page = request.input('page', 1);
+                const perPage = request.input("per_page", 20);
+                return await Category.query().paginate(page, perPage)
+            // Listar todo    
+            } else {
+                return await Category.query()
+            }
         }
-        // Si no se recibe filtro, devuelve todas las categorías
-        return await Category.all()
-      }
-      
-      // Método para seleccionar una categoría específica
-      public async show({ params }: HttpContextContract) {
-        // Busca una categoría específica por ID
-        const category = await Category.findOrFail(params.id)
-        return category
-      }
     }
 
+    // Create
+    public async create({ request }: HttpContextContract) {
+        //await request.validate(CategoryValidator);
+        const body = request.body();
+        const theCategory: Category = await Category.create(body);
+        return theCategory;
+    }
+
+    // Update
+    public async update({ params, request }: HttpContextContract) {
+        // Buscar el objeto a actualizar
+        const theCategory: Category = await Category.findOrFail(params.id);
+        const body = request.body();
+        theCategory.name = body.name;
+
+        // Confirmar el proceso en la base de datos
+        return await theCategory.save();
+    }
+
+    // Delete
+    public async delete({ params, response }: HttpContextContract) {
+        // Buscar el objeto a eliminar 
+        const theCategory: Category = await Category.findOrFail(params.id);
+            response.status(204);
+            // retorno la accion de borrado
+            return await theCategory.delete();
+    }
+}
