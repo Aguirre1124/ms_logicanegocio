@@ -8,6 +8,10 @@ import NaturalPerson from './NaturalPerson'
 export default class Customer extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+  
+  //id que se obtiene del ms-security
+  @column()
+  public userId: string
 
   @column()
   public name: string

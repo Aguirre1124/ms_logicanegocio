@@ -10,4 +10,7 @@ Route.group(() => {
     Route.put("/facturas/:id", "FacturasController.update");
     // Borrar
     Route.delete("/facturas/:id", "FacturasController.delete");
+
+    Route.post('/facturas/:id/procesarPago', 'FacturasController.procesarPago')
+
 })//.middleware(["security"])
