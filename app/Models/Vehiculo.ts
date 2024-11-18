@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, HasMany, hasMany, HasManyThrough, hasManyThrough, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, HasMany, hasMany, HasManyThrough, hasManyThrough} from '@ioc:Adonis/Lucid/Orm'
 import VehicleDriver from './VehicleDriver'
 import Conductor from './Conductor'
 import OwnerVehicle from './OwnerVehicle'
