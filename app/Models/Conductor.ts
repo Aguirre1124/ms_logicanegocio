@@ -1,14 +1,18 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, HasMany, hasMany, HasManyThrough, hasManyThrough } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, HasMany,hasOne, HasOne, hasMany, HasManyThrough, hasManyThrough } from '@ioc:Adonis/Lucid/Orm'
 import VehicleDriver from './VehicleDriver'
 import Vehiculo from './Vehiculo'
 import Spent from './Spent'
 import Servicio from './Servicio'
 import Shift from './Shift'
+import Dueno from './Dueno'
 
 export default class Conductor extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+
+  @column()
+  public userId: string
 
   @column()
   public nombre: string
@@ -40,6 +44,11 @@ export default class Conductor extends BaseModel {
     foreignKey: 'conductor_id'
   })
   public vehicledrivers: HasMany<typeof VehicleDriver>
+
+  @hasOne(() => Dueno, {
+    foreignKey: "conductor_id",
+  })
+  public owner: HasOne<typeof Dueno>;
 
   @hasManyThrough([() => Vehiculo, () => VehicleDriver], {
     localKey: 'id', // ID en Conductor
